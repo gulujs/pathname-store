@@ -1,0 +1,34 @@
+{
+  "name": "@lunjs/pathname-store",
+  "version": "0.0.1",
+  "description": "A fast path router, base on radix tree",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "jest --coverage --coverageReporters text"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lunjs/pathname-store.git"
+  },
+  "author": "jKey Lu <jkeylu@gmail.com> (https://github.com/jkeylu)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lunjs/pathname-store/issues"
+  },
+  "homepage": "https://github.com/lunjs/pathname-store#readme",
+  "keywords": [
+    "path",
+    "router",
+    "radix tree",
+    "fast",
+    "pathname",
+    "store"
+  ],
+  "devDependencies": {
+    "jest": "^26.1.0"
+  },
+  "dependencies": {
+    "@lunjs/archy": "0.0.3"
+  }
+}
