@@ -224,14 +224,12 @@ class PathnameStore {
       const r = {
         found: false,
         box: null,
-        params: [],
+        pvalues: [],
         originalPath
       };
       backtrackFind(path, this.tree, r, 0, 0);
-      if (r.found) {
-        delete r.originalPath;
-        return r;
-      }
+      delete r.originalPath;
+      return r;
     }
   }
 
@@ -277,7 +275,7 @@ function setNodeBox(ps, node, store, pnames) {
 }
 
 function simpleFind(search, cn, originalPath) {
-  let params = [],
+  let pvalues = [],
     n = 0,
     p = 0,
     prefix,
@@ -295,7 +293,9 @@ function simpleFind(search, cn, originalPath) {
 
     anyNode = null,
     anyN,
-    anyP;
+    anyP,
+
+    r = { found: false };
 
   while (true) {
     sl = search.length;
@@ -303,9 +303,11 @@ function simpleFind(search, cn, originalPath) {
 
     if (sl === 0 || search === prefix) {
       if (cn.box) {
-        return { found: true, box: cn.box, params };
+        r.found = true;
+        r.box = cn.box;
+        r.pvalues = pvalues;
       }
-      return;
+      return r;
     }
 
     pl = 0;
@@ -341,11 +343,11 @@ function simpleFind(search, cn, originalPath) {
       // matchAll node from store
       if (anyNode !== null) {
         cn = anyNode;
-        params[anyN] = originalPath.substring(anyP);
+        pvalues[anyN] = originalPath.substring(anyP);
         search = '';
         continue;
       }
-      return;
+      return r;
     }
 
     // child static node
@@ -385,7 +387,7 @@ function simpleFind(search, cn, originalPath) {
       if (l === -1) {
         l = search.length;
       }
-      params[n] = originalPath.substring(p, p + l);
+      pvalues[n] = originalPath.substring(p, p + l);
       n++;
 
       cn = cn.paramChild;
@@ -397,11 +399,11 @@ function simpleFind(search, cn, originalPath) {
     // matchAll node from store
     if (anyNode !== null) {
       cn = anyNode;
-      params[anyN] = originalPath.substring(anyP);
+      pvalues[anyN] = originalPath.substring(anyP);
       search = '';
       continue;
     }
-    return;
+    return r;
   }
 }
 
@@ -456,7 +458,7 @@ function backtrackFind(search, cn, r, n, p) {
     if (l === -1) {
       l = search.length;
     }
-    r.params[n] = r.originalPath.substring(p, p + l);
+    r.pvalues[n] = r.originalPath.substring(p, p + l);
 
     backtrackFind(search.substring(l), cn.paramChild, r, n + 1, p + l);
     if (r.found) {
@@ -466,7 +468,7 @@ function backtrackFind(search, cn, r, n, p) {
 
   // MatchAll node
   if (cn.matchAllChild !== null) {
-    r.params[n] = r.originalPath.substring(p);
+    r.pvalues[n] = r.originalPath.substring(p);
     backtrackFind('', cn.matchAllChild, r);
   }
 }

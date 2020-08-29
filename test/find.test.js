@@ -24,7 +24,7 @@ function basicCaseSensitiveTest(options) {
         store: '/User/Followers',
         pnames: []
       },
-      params: []
+      pvalues: []
     });
   });
 
@@ -36,7 +36,7 @@ function basicCaseSensitiveTest(options) {
         store: '/Users/:Name',
         pnames: ['Name']
       },
-      params: ['jKeyLu']
+      pvalues: ['jKeyLu']
     });
   });
 
@@ -48,7 +48,7 @@ function basicCaseSensitiveTest(options) {
         store: '/Users/:Name/:Repo/Keys/:Id',
         pnames: ['Name', 'Repo', 'Id']
       },
-      params: ['jKeyLu', 'hello', '1']
+      pvalues: ['jKeyLu', 'hello', '1']
     });
   });
 
@@ -60,7 +60,7 @@ function basicCaseSensitiveTest(options) {
         store: '/*',
         pnames: ['*']
       },
-      params: ['repos/jKeyLu']
+      pvalues: ['repos/jKeyLu']
     });
   });
 }
@@ -77,7 +77,7 @@ function basicCaseInsensitiveTest(options) {
         store: '/User/Followers',
         pnames: []
       },
-      params: []
+      pvalues: []
     })
   });
 
@@ -89,7 +89,7 @@ function basicCaseInsensitiveTest(options) {
         store: '/Users/:Name',
         pnames: ['Name']
       },
-      params: ['jKeyLu']
+      pvalues: ['jKeyLu']
     });
   });
 
@@ -101,7 +101,7 @@ function basicCaseInsensitiveTest(options) {
         store: '/Users/:Name/:Repo/Keys/:Id',
         pnames: ['Name', 'Repo', 'Id']
       },
-      params: ['jKeyLu', 'hello', '1']
+      pvalues: ['jKeyLu', 'hello', '1']
     });
   });
 
@@ -113,7 +113,7 @@ function basicCaseInsensitiveTest(options) {
         store: '/*',
         pnames: ['*']
       },
-      params: ['repos/jKeyLu']
+      pvalues: ['repos/jKeyLu']
     })
   });
 }
@@ -128,7 +128,7 @@ describe('PathnameStore.find', () => {
       s.add('/a/:b/:c/d/f', '/a/:b/:c/d/f');
       s.add('/:a/:b/:c/:d/g', '/:a/:b/:c/:d/g');
       const r = s.find('/a/b/c/d/g');
-      expect(r).toEqual(undefined);
+      expect(r.found).toEqual(false);
     });
 
     it('simple mode can match all', () => {
@@ -141,7 +141,7 @@ describe('PathnameStore.find', () => {
       expect(r).toEqual({
         found: true,
         box: { store: undefined, pnames: [ '*' ] },
-        params: [ 'a/b/c/d/g', 'c' ]
+        pvalues: [ 'a/b/c/d/g', 'c' ]
       });
     });
   });
@@ -162,7 +162,7 @@ describe('PathnameStore.find', () => {
       expect(r).toEqual({
         found: true,
         box: { store: '/:a/:b/:c/:d/g', pnames: [ 'a', 'b', 'c', 'd' ] },
-        params: [ 'a', 'b', 'c', 'd' ]
+        pvalues: [ 'a', 'b', 'c', 'd' ]
       });
     });
   });
