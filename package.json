@@ -1,6 +1,6 @@
 {
   "name": "@lunjs/pathname-store",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A fast path router, base on radix tree",
   "main": "index.js",
   "types": "index.d.ts",
