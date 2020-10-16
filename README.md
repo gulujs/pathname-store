@@ -26,7 +26,7 @@ console.log(r);
 | -- | -- |
 | :name | named param |
 | * | match-all param |
-| *name | named match-all param |
+| :name* | named match-all param |
 
 - Named parameters match anything until the next '/' or the path end.
 - Match-all param match anything until the path end.

@@ -10,6 +10,7 @@ function addPaths(s) {
   s.add('/User/Following', '/User/Following');
   s.add('/User/Starred/:Owner/:Repo', '/User/Starred/:Owner/:Repo');
   s.add('/*', '/*');
+  s.add('/File/:Path*', '/File/:Path*')
 }
 
 function basicCaseSensitiveTest(options) {
@@ -61,6 +62,18 @@ function basicCaseSensitiveTest(options) {
         pnames: ['*']
       },
       pvalues: ['repos/jKeyLu']
+    });
+  });
+
+  it('named match all param', () => {
+    const r = s.find('/File/to/the/pathname');
+    expect(r).toEqual({
+      found: true,
+      box: {
+        store: '/File/:Path*',
+        pnames: ['Path']
+      },
+      pvalues: ['to/the/pathname']
     });
   });
 }
@@ -115,6 +128,18 @@ function basicCaseInsensitiveTest(options) {
       },
       pvalues: ['repos/jKeyLu']
     })
+  });
+
+  it('named match all param', () => {
+    const r = s.find('/file/to/the/pathname');
+    expect(r).toEqual({
+      found: true,
+      box: {
+        store: '/File/:Path*',
+        pnames: ['Path']
+      },
+      pvalues: ['to/the/pathname']
+    });
   });
 }
 

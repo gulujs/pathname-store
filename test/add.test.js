@@ -11,21 +11,22 @@ describe('PathnameStore.add', () => {
     expect(() => s.add('/users/:')).toThrow('Param name should not be empty.');
   });
 
-  it('valid param name', () => {
+  it('invalid param name', () => {
     const s = new PathnameStore();
     expect(() => s.add('/users/:名字')).toThrow(/Param name ".*" is not valid/);
-    expect(() => s.add('/users/*名字')).toThrow(/Param name ".*" is not valid/);
+    expect(() => s.add('/users/:名字*')).toThrow(/Param name ".*" is not valid/);
   });
 
   it('contain multiple of the same param name', () => {
     const s = new PathnameStore();
     expect(() => s.add('/users/:name/:name')).toThrow(/contain multiple of the same param name/);
-    expect(() => s.add('/users/:name/*name')).toThrow(/contain multiple of the same param name/);
+    expect(() => s.add('/users/:name/:name*')).toThrow(/contain multiple of the same param name/);
   });
 
   it('the character "*" should be at end of path', () => {
     const s = new PathnameStore();
     expect(() => s.add('/*/*')).toThrow('The character "*" should be at end of path.');
+    expect(() => s.add('/:name*/:name*')).toThrow('The character "*" should be at end of path.');
   });
 
   it('add case sensitive path', () => {
@@ -141,6 +142,7 @@ describe('PathnameStore.add', () => {
     s.add('/user/following/:name');
     s.add('/user/starred/:owner/:repo');
     s.add('/*');
+    s.add('/file/:path*');
 
     expect(s.tree).toEqual({
       kind: 's',
@@ -148,6 +150,27 @@ describe('PathnameStore.add', () => {
       label: 47,
       endsWithSlash: true,
       children: {
+        '102': {
+          kind: 's',
+          prefix: 'file/',
+          label: 102,
+          endsWithSlash: true,
+          children: {},
+          paramChild: null,
+          matchAllChild: {
+            kind: 'a',
+            prefix: '*',
+            label: 42,
+            endsWithSlash: false,
+            children: {},
+            paramChild: null,
+            matchAllChild: null,
+            box: {
+              pnames: ['path']
+            }
+          },
+          box: null
+        },
         '117': {
           kind: 's',
           prefix: 'user',

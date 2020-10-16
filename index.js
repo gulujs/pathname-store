@@ -61,6 +61,11 @@ class PathnameStore {
         for (; i < l && path.charCodeAt(i) !== SLASH; i++);
 
         let pname = path.substring(j, i);
+        const hasAsterisk = pname.charCodeAt(pname.length - 1) === ASTERISK;
+        if (hasAsterisk) {
+          pname = pname.substring(0, pname.length - 1);
+        }
+
         if (!pname) {
           throw new Error('Param name should not be empty.');
         }
@@ -72,24 +77,40 @@ class PathnameStore {
         }
         pnames.push(pname);
 
-        path = path.substring(0, j) + path.substring(i);
+        if (!hasAsterisk) {
+          // named param
+          path = path.substring(0, j) + path.substring(i);
 
-        i = j;
-        l = path.length;
+          i = j;
+          l = path.length;
 
-        if (i === l) {
-          if (!this.caseSensitive) {
-            path = path.toLowerCase();
+          if (i === l) {
+            if (!this.caseSensitive) {
+              path = path.toLowerCase();
+            }
+            this.insert(ParamKind, path, store, pnames);
+            return;
           }
-          this.insert(ParamKind, path, store, pnames);
-          return;
-        }
 
-        staticPart = path.substring(0, i);
-        if (!this.caseSensitive) {
-          staticPart = staticPart.toLowerCase();
+          staticPart = path.substring(0, i);
+          if (!this.caseSensitive) {
+            staticPart = staticPart.toLowerCase();
+          }
+          this.insert(ParamKind, staticPart);
+
+        } else {
+          // named match-all param
+          if (i === l) {
+            staticPart = path.substring(0, j - 1) + '*';
+            if (!this.caseSensitive) {
+              staticPart = staticPart.toLowerCase();
+            }
+            this.insert(MatchAllKind, staticPart, store, pnames);
+            return;
+          }
+
+          throw new Error('The character "*" should be at end of path.');
         }
-        this.insert(ParamKind, staticPart);
 
       } else if (code === ASTERISK) {
         staticPart = path.substring(0, i);
@@ -98,22 +119,13 @@ class PathnameStore {
         }
         this.insert(StaticKind, staticPart);
 
-        const j = i + 1;
-        for (; i < l && path.charCodeAt(i) !== SLASH; i++);
+        pnames.push('*');
 
-        let pname = path.substring(j, i);
-        if (pname === '') {
-          pname = '*';
-        } else if (!this.paramNameRE.test(pname)) {
-          throw new Error(`Param name "${pname}" is not valid.`);
-        }
-        if (pnames.includes(pname)) {
-          throw new Error(`Path "${originalPath}" contain multiple of the same param name`);
-        }
-        pnames.push(pname);
-
-        if (i === l) {
-          this.insert(MatchAllKind, path.substring(0, j), store, pnames);
+        if (i + 1 === l) {
+          if (this.caseSensitive) {
+            path = path.toLowerCase();
+          }
+          this.insert(MatchAllKind, path, store, pnames);
           return;
         }
 
