@@ -8,8 +8,8 @@ npm install @lunjs/pathname-store
 
 ## Usage
 
-```
-const { PathnameStore } = require('@lunjs/pathname-store');
+```js
+import { PathnameStore } from '@lunjs/pathname-store';
 
 const s = new PathnameStore();
 s.add('/users', {});
@@ -45,4 +45,4 @@ console.log(r);
 
 ## License
 
-- [MIT](https://github.com/lunjs/pathname-store/blob/master/LICENSE)
+[MIT](LICENSE)

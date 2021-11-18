@@ -1,3 +1,5 @@
+import { DrawOptions } from '@lunjs/archy';
+
 export interface PathnameStoreOptions {
     backtrack?: boolean;
     caseSensitive?: boolean;
@@ -8,12 +10,12 @@ export interface PathnameStoreOptions {
      * @param pnames
      * @returns A new customized object
      */
-    boxing?: (box: any, store: any, pnames: string[]) => any;
+    boxing?: (box: unknown, store: unknown, pnames: string[]) => unknown;
 }
 
 export class PathnameStore {
     constructor(options?: PathnameStoreOptions);
-    add(path: string, store: any): void;
-    find(path: string): { found: false; } | { found: true; pvalues: string[]; box: any; };
-    prettyPrint(options: any): string;
+    add(path: string, store: unknown): void;
+    find(path: string): { found: false; } | { found: true; pvalues: string[]; box: unknown; };
+    prettyPrint(options?: DrawOptions): string;
 }

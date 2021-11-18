@@ -1,5 +1,5 @@
-const archy = require('@lunjs/archy');
-const {
+import * as archy from '@lunjs/archy';
+import {
   StaticKind,
   ParamKind,
   MatchAllKind,
@@ -7,14 +7,14 @@ const {
   SLASH,
   COLON,
   Node
-} = require('./node');
+} from './node.js';
 
-class PathnameStore {
+export class PathnameStore {
   constructor(options = {}) {
     options = options || {};
 
     this.backtrack = options.backtrack || false;
-    this.caseSensitive = options.caseSensitive === undefined ? true : options.caseSensitive;
+    this.caseSensitive = typeof options.caseSensitive === 'undefined' || options.caseSensitive;
     this.paramNamePattern = options.paramNamePattern || '[a-zA-Z_]\\w*';
 
     if (this.paramNamePattern.includes('/')) {
@@ -38,6 +38,7 @@ class PathnameStore {
    * @param {string} path
    * @param {*} store
    */
+  // eslint-disable-next-line complexity
   add(path, store) {
     if (path.charCodeAt(0) !== SLASH) {
       throw new Error('The first character of path must be "/"');
@@ -101,6 +102,7 @@ class PathnameStore {
         } else {
           // named match-all param
           if (i === l) {
+            // eslint-disable-next-line prefer-template
             staticPart = path.substring(0, j - 1) + '*';
             if (!this.caseSensitive) {
               staticPart = staticPart.toLowerCase();
@@ -147,26 +149,20 @@ class PathnameStore {
    * @param {*} pnames
    */
   insert(kind, path, store, pnames) {
+    // eslint-disable-next-line one-var
     let cn = this.tree,
       search = path,
       sl,
       pl,
-      max,
       l,
       n,
       code;
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       sl = search.length;
       pl = cn.prefix.length;
-      l = 0;
-
-      // LCP
-      max = pl;
-      if (sl < max) {
-        max = sl;
-      }
-      for (; l < max && search.charCodeAt(l) === cn.prefix.charCodeAt(l); l++);
+      l = lcp(search, cn.prefix, sl, pl);
 
       // There is some overlap between `search` and `cn.prefix`
       if (l < pl) {
@@ -286,14 +282,25 @@ function setNodeBox(ps, node, store, pnames) {
   node.setBox(box);
 }
 
+// Longest Common Prefix (https://en.wikipedia.org/wiki/LCP_array)
+function lcp(search, prefix, sl, pl) {
+  let max = pl;
+  if (sl < max) {
+    max = sl;
+  }
+  let l = 0;
+  for (; l < max && search.charCodeAt(l) === prefix.charCodeAt(l); l++);
+  return l;
+}
+
 function simpleFind(search, cn, originalPath) {
-  let pvalues = [],
-    n = 0,
+  const pvalues = [];
+  // eslint-disable-next-line one-var
+  let n = 0,
     p = 0,
     prefix,
     sl,
     pl,
-    max,
     l,
     searchStaticNode,
     child,
@@ -305,10 +312,23 @@ function simpleFind(search, cn, originalPath) {
 
     anyNode = null,
     anyN,
-    anyP,
+    anyP;
 
-    r = { found: false };
+  const r = {
+    found: false,
+    box: null,
+    pvalues: []
+  };
 
+  const storeAnyNode = (cn, n, p) => {
+    if (cn.matchAllChild !== null) {
+      anyNode = cn.matchAllChild;
+      anyN = n;
+      anyP = p;
+    }
+  };
+
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     sl = search.length;
     prefix = cn.prefix;
@@ -327,12 +347,7 @@ function simpleFind(search, cn, originalPath) {
 
     if (cn.kind === StaticKind) {
       pl = prefix.length;
-      // LCP
-      max = pl;
-      if (sl < max) {
-        max = sl;
-      }
-      for (; l < max && search.charCodeAt(l) === prefix.charCodeAt(l); l++);
+      l = lcp(search, prefix, sl, pl);
     }
 
     if (l === pl) {
@@ -351,21 +366,21 @@ function simpleFind(search, cn, originalPath) {
       nextNode = null;
       searchStaticNode = false;
 
-    } else {
+    } else if (anyNode !== null) {
       // matchAll node from store
-      if (anyNode !== null) {
-        cn = anyNode;
-        pvalues[anyN] = originalPath.substring(anyP);
-        search = '';
-        continue;
-      }
+      cn = anyNode;
+      pvalues[anyN] = originalPath.substring(anyP);
+      search = '';
+      continue;
+
+    } else {
       return r;
     }
 
     // child static node
     if (searchStaticNode) {
       child = cn.children[search.charCodeAt(0)];
-      if (child !== undefined) {
+      if (typeof child !== 'undefined') {
         if (cn.endsWithSlash) {
           // store current node
           nextSearch = search;
@@ -374,11 +389,7 @@ function simpleFind(search, cn, originalPath) {
           nextP = p;
 
           // store child match all node
-          if (cn.matchAllChild !== null) {
-            anyNode = cn.matchAllChild;
-            anyN = n;
-            anyP = p;
-          }
+          storeAnyNode(cn, n, p);
         }
 
         cn = child;
@@ -387,11 +398,7 @@ function simpleFind(search, cn, originalPath) {
     }
 
     // store child match all node
-    if (cn.matchAllChild !== null) {
-      anyNode = cn.matchAllChild;
-      anyN = n;
-      anyP = p;
-    }
+    storeAnyNode(cn, n, p);
 
     // child param node
     if (cn.paramChild !== null) {
@@ -415,16 +422,13 @@ function simpleFind(search, cn, originalPath) {
       search = '';
       continue;
     }
+
     return r;
   }
 }
 
 function backtrackFind(search, cn, r, n, p) {
-  let sl = search.length,
-    pl,
-    max,
-    l,
-    child;
+  const sl = search.length;
 
   if (sl === 0 || search === cn.prefix) {
     if (cn.box) {
@@ -434,15 +438,8 @@ function backtrackFind(search, cn, r, n, p) {
     return;
   }
 
-  pl = cn.prefix.length;
-  l = 0;
-
-  // LCP
-  max = pl;
-  if (sl < max) {
-    max = sl;
-  }
-  for (; l < max && search.charCodeAt(l) === cn.prefix.charCodeAt(l); l++);
+  const pl = cn.prefix.length;
+  let l = lcp(search, cn.prefix, sl, pl);
 
   if (l === pl) {
     search = search.substring(l);
@@ -452,8 +449,8 @@ function backtrackFind(search, cn, r, n, p) {
   }
 
   // Static node
-  child = cn.children[search.charCodeAt(0)];
-  if (child !== undefined) {
+  const child = cn.children[search.charCodeAt(0)];
+  if (typeof child !== 'undefined') {
     backtrackFind(search, child, r, n, p);
     if (r.found) {
       return;
@@ -484,7 +481,3 @@ function backtrackFind(search, cn, r, n, p) {
     backtrackFind('', cn.matchAllChild, r);
   }
 }
-
-module.exports = {
-  PathnameStore
-};

@@ -1,32 +1,33 @@
-const { PathnameStore } = require('..');
+import { expect } from 'chai';
+import { PathnameStore } from '../index.js';
 
 describe('PathnameStore.add', () => {
   it('first character of path must be "/"', () => {
     const s = new PathnameStore();
-    expect(() => s.add('user')).toThrow('The first character of path must be "/"');
+    expect(() => s.add('user')).to.throw('The first character of path must be "/"');
   });
 
   it('empty param name', () => {
     const s = new PathnameStore();
-    expect(() => s.add('/users/:')).toThrow('Param name should not be empty.');
+    expect(() => s.add('/users/:')).to.throw('Param name should not be empty.');
   });
 
   it('invalid param name', () => {
     const s = new PathnameStore();
-    expect(() => s.add('/users/:名字')).toThrow(/Param name ".*" is not valid/);
-    expect(() => s.add('/users/:名字*')).toThrow(/Param name ".*" is not valid/);
+    expect(() => s.add('/users/:名字')).to.throw(/Param name ".*" is not valid/);
+    expect(() => s.add('/users/:名字*')).to.throw(/Param name ".*" is not valid/);
   });
 
   it('contain multiple of the same param name', () => {
     const s = new PathnameStore();
-    expect(() => s.add('/users/:name/:name')).toThrow(/contain multiple of the same param name/);
-    expect(() => s.add('/users/:name/:name*')).toThrow(/contain multiple of the same param name/);
+    expect(() => s.add('/users/:name/:name')).to.throw(/contain multiple of the same param name/);
+    expect(() => s.add('/users/:name/:name*')).to.throw(/contain multiple of the same param name/);
   });
 
   it('the character "*" should be at end of path', () => {
     const s = new PathnameStore();
-    expect(() => s.add('/*/*')).toThrow('The character "*" should be at end of path.');
-    expect(() => s.add('/:name*/:name*')).toThrow('The character "*" should be at end of path.');
+    expect(() => s.add('/*/*')).to.throw('The character "*" should be at end of path.');
+    expect(() => s.add('/:name*/:name*')).to.throw('The character "*" should be at end of path.');
   });
 
   it('add case sensitive path', () => {
@@ -34,19 +35,19 @@ describe('PathnameStore.add', () => {
     s.add('/Users');
     s.add('/Users/:name');
 
-    expect(s.tree).toEqual({
+    expect(s.tree).to.deep.equal({
       kind: 's',
       prefix: '/',
       label: 47,
       endsWithSlash: true,
       children: {
-        '85': {
+        85: {
           kind: 's',
           prefix: 'Users',
           label: 85,
           endsWithSlash: false,
           children: {
-            '47': {
+            47: {
               kind: 's',
               prefix: '/',
               label: 47,
@@ -61,7 +62,8 @@ describe('PathnameStore.add', () => {
                 paramChild: null,
                 matchAllChild: null,
                 box: {
-                  pnames: ['name']
+                  pnames: ['name'],
+                  store: undefined
                 }
               },
               matchAllChild: null,
@@ -71,7 +73,8 @@ describe('PathnameStore.add', () => {
           paramChild: null,
           matchAllChild: null,
           box: {
-            pnames: []
+            pnames: [],
+            store: undefined
           }
         }
       },
@@ -86,19 +89,19 @@ describe('PathnameStore.add', () => {
     s.add('/Users');
     s.add('/Users/:name');
 
-    expect(s.tree).toEqual({
+    expect(s.tree).to.deep.equal({
       kind: 's',
       prefix: '/',
       label: 47,
       endsWithSlash: true,
       children: {
-        '117': {
+        117: {
           kind: 's',
           prefix: 'users',
           label: 117,
           endsWithSlash: false,
           children: {
-            '47': {
+            47: {
               kind: 's',
               prefix: '/',
               label: 47,
@@ -113,7 +116,8 @@ describe('PathnameStore.add', () => {
                 paramChild: null,
                 matchAllChild: null,
                 box: {
-                  pnames: ['name']
+                  pnames: ['name'],
+                  store: undefined
                 }
               },
               matchAllChild: null,
@@ -123,7 +127,8 @@ describe('PathnameStore.add', () => {
           paramChild: null,
           matchAllChild: null,
           box: {
-            pnames: []
+            pnames: [],
+            store: undefined
           }
         }
       },
@@ -144,13 +149,13 @@ describe('PathnameStore.add', () => {
     s.add('/*');
     s.add('/file/:path*');
 
-    expect(s.tree).toEqual({
+    expect(s.tree).to.deep.equal({
       kind: 's',
       prefix: '/',
       label: 47,
       endsWithSlash: true,
       children: {
-        '102': {
+        102: {
           kind: 's',
           prefix: 'file/',
           label: 102,
@@ -166,30 +171,31 @@ describe('PathnameStore.add', () => {
             paramChild: null,
             matchAllChild: null,
             box: {
-              pnames: ['path']
+              pnames: ['path'],
+              store: undefined
             }
           },
           box: null
         },
-        '117': {
+        117: {
           kind: 's',
           prefix: 'user',
           label: 117,
           endsWithSlash: false,
           children: {
-            '47': {
+            47: {
               kind: 's',
               prefix: '/',
               label: 47,
               endsWithSlash: true,
               children: {
-                '102': {
+                102: {
                   kind: 's',
                   prefix: 'follow',
                   label: 102,
                   endsWithSlash: false,
                   children: {
-                    '101': {
+                    101: {
                       kind: 's',
                       prefix: 'ers/',
                       label: 101,
@@ -204,13 +210,14 @@ describe('PathnameStore.add', () => {
                         paramChild: null,
                         matchAllChild: null,
                         box: {
-                          pnames: ['name']
+                          pnames: ['name'],
+                          store: undefined
                         }
                       },
                       matchAllChild: null,
                       box: null
                     },
-                    '105': {
+                    105: {
                       kind: 's',
                       prefix: 'ing/',
                       label: 105,
@@ -225,7 +232,8 @@ describe('PathnameStore.add', () => {
                         paramChild: null,
                         matchAllChild: null,
                         box: {
-                          pnames: ['name']
+                          pnames: ['name'],
+                          store: undefined
                         }
                       },
                       matchAllChild: null,
@@ -236,7 +244,7 @@ describe('PathnameStore.add', () => {
                   matchAllChild: null,
                   box: null
                 },
-                '115': {
+                115: {
                   kind: 's',
                   prefix: 'starred/',
                   label: 115,
@@ -248,7 +256,7 @@ describe('PathnameStore.add', () => {
                     label: 58,
                     endsWithSlash: false,
                     children: {
-                      '47': {
+                      47: {
                         kind: 's',
                         prefix: '/',
                         label: 47,
@@ -263,7 +271,8 @@ describe('PathnameStore.add', () => {
                           paramChild: null,
                           matchAllChild: null,
                           box: {
-                            pnames: ['owner', 'repo']
+                            pnames: ['owner', 'repo'],
+                            store: undefined
                           }
                         },
                         matchAllChild: null,
@@ -282,13 +291,13 @@ describe('PathnameStore.add', () => {
               matchAllChild: null,
               box: null
             },
-            '115': {
+            115: {
               kind: 's',
               prefix: 's',
               label: 115,
               endsWithSlash: false,
               children: {
-                '47': {
+                47: {
                   kind: 's',
                   prefix: '/',
                   label: 47,
@@ -303,7 +312,8 @@ describe('PathnameStore.add', () => {
                     paramChild: null,
                     matchAllChild: null,
                     box: {
-                      pnames: ['name']
+                      pnames: ['name'],
+                      store: undefined
                     }
                   },
                   matchAllChild: null,
@@ -313,14 +323,16 @@ describe('PathnameStore.add', () => {
               paramChild: null,
               matchAllChild: null,
               box: {
-                pnames: []
+                pnames: [],
+                store: undefined
               }
             }
           },
           paramChild: null,
           matchAllChild: null,
           box: {
-            pnames: []
+            pnames: [],
+            store: undefined
           }
         }
       },
@@ -334,7 +346,8 @@ describe('PathnameStore.add', () => {
         paramChild: null,
         matchAllChild: null,
         box: {
-          pnames: ['*']
+          pnames: ['*'],
+          store: undefined
         }
       },
       box: null

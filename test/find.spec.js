@@ -1,4 +1,5 @@
-const { PathnameStore } = require('..');
+import { expect } from 'chai';
+import { PathnameStore } from '../index.js';
 
 function addPaths(s) {
   s.add('/Users', '/Users');
@@ -10,7 +11,7 @@ function addPaths(s) {
   s.add('/User/Following', '/User/Following');
   s.add('/User/Starred/:Owner/:Repo', '/User/Starred/:Owner/:Repo');
   s.add('/*', '/*');
-  s.add('/File/:Path*', '/File/:Path*')
+  s.add('/File/:Path*', '/File/:Path*');
 }
 
 function basicCaseSensitiveTest(options) {
@@ -19,7 +20,7 @@ function basicCaseSensitiveTest(options) {
 
   it('match static', () => {
     const r = s.find('/User/Followers');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/User/Followers',
@@ -31,7 +32,7 @@ function basicCaseSensitiveTest(options) {
 
   it('match param', () => {
     const r = s.find('/Users/jKeyLu');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/Users/:Name',
@@ -43,7 +44,7 @@ function basicCaseSensitiveTest(options) {
 
   it('match param 2', () => {
     const r = s.find('/Users/jKeyLu/hello/Keys/1');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/Users/:Name/:Repo/Keys/:Id',
@@ -55,7 +56,7 @@ function basicCaseSensitiveTest(options) {
 
   it('match all', () => {
     const r = s.find('/repos/jKeyLu');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/*',
@@ -67,7 +68,7 @@ function basicCaseSensitiveTest(options) {
 
   it('named match all param', () => {
     const r = s.find('/File/to/the/pathname');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/File/:Path*',
@@ -84,19 +85,19 @@ function basicCaseInsensitiveTest(options) {
 
   it('match static', () => {
     const r = s.find('/user/followers');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/User/Followers',
         pnames: []
       },
       pvalues: []
-    })
+    });
   });
 
   it('match param', () => {
     const r = s.find('/users/jKeyLu');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/Users/:Name',
@@ -108,7 +109,7 @@ function basicCaseInsensitiveTest(options) {
 
   it('match param 2', () => {
     const r = s.find('/users/jKeyLu/hello/keys/1');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/Users/:Name/:Repo/Keys/:Id',
@@ -120,19 +121,19 @@ function basicCaseInsensitiveTest(options) {
 
   it('match all', () => {
     const r = s.find('/repos/jKeyLu');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/*',
         pnames: ['*']
       },
       pvalues: ['repos/jKeyLu']
-    })
+    });
   });
 
   it('named match all param', () => {
     const r = s.find('/file/to/the/pathname');
-    expect(r).toEqual({
+    expect(r).to.deep.equal({
       found: true,
       box: {
         store: '/File/:Path*',
@@ -153,7 +154,7 @@ describe('PathnameStore.find', () => {
       s.add('/a/:b/:c/d/f', '/a/:b/:c/d/f');
       s.add('/:a/:b/:c/:d/g', '/:a/:b/:c/:d/g');
       const r = s.find('/a/b/c/d/g');
-      expect(r.found).toEqual(false);
+      expect(r.found).to.deep.equal(false);
     });
 
     it('simple mode can match all', () => {
@@ -163,10 +164,10 @@ describe('PathnameStore.find', () => {
       s.add('/:a/:b/:c/:d/g', '/:a/:b/:c/:d/g');
       s.add('/*');
       const r = s.find('/a/b/c/d/g');
-      expect(r).toEqual({
+      expect(r).to.deep.equal({
         found: true,
-        box: { store: undefined, pnames: [ '*' ] },
-        pvalues: [ 'a/b/c/d/g', 'c' ]
+        box: { store: undefined, pnames: ['*'] },
+        pvalues: ['a/b/c/d/g', 'c']
       });
     });
   });
@@ -184,10 +185,10 @@ describe('PathnameStore.find', () => {
       s.add('/a/:b/:c/d/f', '/a/:b/:c/d/f');
       s.add('/:a/:b/:c/:d/g', '/:a/:b/:c/:d/g');
       const r = s.find('/a/b/c/d/g');
-      expect(r).toEqual({
+      expect(r).to.deep.equal({
         found: true,
-        box: { store: '/:a/:b/:c/:d/g', pnames: [ 'a', 'b', 'c', 'd' ] },
-        pvalues: [ 'a', 'b', 'c', 'd' ]
+        box: { store: '/:a/:b/:c/:d/g', pnames: ['a', 'b', 'c', 'd'] },
+        pvalues: ['a', 'b', 'c', 'd']
       });
     });
   });

@@ -1,15 +1,15 @@
-const StaticKind = 's';
-const ParamKind = 'p';
-const MatchAllKind = 'a';
+export const StaticKind = 's';
+export const ParamKind = 'p';
+export const MatchAllKind = 'a';
 
 /** '*' */
-const ASTERISK = 42;
+export const ASTERISK = 42;
 /** '/' */
-const SLASH = 47;
+export const SLASH = 47;
 /** ':' */
-const COLON = 58;
+export const COLON = 58;
 
-class Node {
+export class Node {
   constructor(kind = StaticKind, prefix = '/') {
     this.kind = kind;
     this.setPrefix(prefix);
@@ -69,13 +69,3 @@ class Node {
     return node;
   }
 }
-
-module.exports = {
-  StaticKind,
-  ParamKind,
-  MatchAllKind,
-  ASTERISK,
-  SLASH,
-  COLON,
-  Node
-};
