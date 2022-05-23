@@ -1,15 +1,15 @@
-# @lunjs/pathname-store
+# @gulujs/pathname-store
 
 ## Installation
 
 ```
-npm install @lunjs/pathname-store
+npm install @gulujs/pathname-store
 ```
 
 ## Usage
 
 ```js
-import { PathnameStore } from '@lunjs/pathname-store';
+import { PathnameStore } from '@gulujs/pathname-store';
 
 const s = new PathnameStore();
 s.add('/users', {});

@@ -1,4 +1,4 @@
-import { DrawOptions } from '@lunjs/archy';
+import { DrawOptions } from '@gulujs/archy';
 
 export interface PathnameStoreOptions {
     backtrack?: boolean;

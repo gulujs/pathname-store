@@ -1,5 +1,5 @@
 {
-  "extends": "@lunjs/eslint-config/js/node",
+  "extends": "@gulujs/eslint-config/js/node",
   "overrides": [
     {
       "files": ["test/**/*"],
