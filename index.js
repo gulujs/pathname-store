@@ -241,6 +241,10 @@ export class PathnameStore {
     }
   }
 
+  reset() {
+    this.tree = new Node();
+  }
+
   prettyPrint(options) {
     options = {
       style: archy.STYLE.FMW,
