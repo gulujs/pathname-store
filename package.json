@@ -1,6 +1,6 @@
 {
   "name": "@gulujs/pathname-store",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A fast path router, base on radix tree",
   "type": "module",
   "main": "index.js",
