@@ -38,7 +38,7 @@
     "store"
   ],
   "dependencies": {
-    "@gulujs/archy": "^0.2.0"
+    "@gulujs/archy": "^0.2.1"
   },
   "devDependencies": {
     "@gulujs/eslint-config": "^0.5.0",
